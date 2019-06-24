@@ -1,0 +1,21 @@
+spring:
+    application:
+        name: user-service
+    jpa:
+        database: MYSQL
+        hibernate:
+            ddl-auto: update
+
+    datasource:
+        url: jdbc:mysql://mysql:3306/test
+        username: root
+        password: 12345
+        driver-class-name: com.mysql.jdbc.Driver
+
+server:
+    port: 8081
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://service-discovery:8761/eureka

@@ -1,0 +1,70 @@
+version: "3"
+
+services: 
+  mysql:
+    image: mysql:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=12345
+      - MYSQL_DATABASE=test
+    
+  #porta 8761:8761
+  service-discovery:
+    image: openjdk:8-jdk-alpine
+    working_dir: /workspace/api
+    volumes:
+      - ./service-discovery/target/:/workspace/api
+    ports:
+      - "8761:8761"
+    command: java -jar service-discovery.jar
+  #porta 8080:8080
+  people-service:
+    image: maven:3-jdk-11
+    working_dir: /workspace/api
+    links:
+      - mysql
+      - service-discovery
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+    volumes:
+      - ./people-service:/workspace/api
+    ports:
+      - "8080:8080"
+    command: mvn spring-boot:run
+    depends_on:
+      - mysql
+      - service-discovery
+  #porta 8081:8081
+  user-service:
+    image: maven:3-jdk-11
+    working_dir: /workspace/api
+    links:
+      - mysql
+      - service-discovery
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+    volumes:
+      - ./user-service:/workspace/api
+    ports:
+      - "8081:8081"
+    command: mvn spring-boot:run
+    depends_on:
+      - mysql
+      - service-discovery
+  #porta 80:8000
+  geteway-service:
+    image: maven:3-jdk-11
+    working_dir: /workspace/api
+    links:
+      - service-discovery
+    volumes:
+      - ./geteway-service:/workspace/api
+    ports:
+      - "80:8000"
+    command: mvn spring-boot:run
+    depends_on:
+      - service-discovery
+      - user-service
+      - people-service
+   
