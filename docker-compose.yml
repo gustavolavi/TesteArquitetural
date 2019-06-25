@@ -9,13 +9,13 @@ services:
     
   #porta 8761:8761
   service-discovery:
-    image: openjdk:8-jdk-alpine
+    image: maven:3-jdk-11
     working_dir: /workspace/api
     volumes:
-      - ./service-discovery/target/:/workspace/api
+      - ./service-discovery/:/workspace/api
     ports:
       - "8761:8761"
-    command: java -jar service-discovery.jar
+    command: mvn spring-boot:run
   #porta 8080:8080
   people-service:
     image: maven:3-jdk-11
